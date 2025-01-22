@@ -13,13 +13,15 @@ def generar_docx_desde_plantilla(ruta_plantilla, ruta_salida, registros):
         ruta_salida (str): Ruta donde se guardará el archivo generado.
         reemplazos (dict): Diccionario con los placeholders y sus valores.
     """
+    contrato = 0
     for registro in registros:
         # Crear una copia de la plantilla
+        contrato +=1 
         doc = Document(ruta_plantilla)
     
         # Reemplazar placeholders en cada párrafo
         for parrafo in doc.paragraphs:
-            for placeholder, valor in reemplazos.items():
+            for placeholder, valor in registro.items():
                 if placeholder in parrafo.text:
                     parrafo.text = parrafo.text.replace(placeholder, str(valor))
     
@@ -27,12 +29,12 @@ def generar_docx_desde_plantilla(ruta_plantilla, ruta_salida, registros):
     for tabla in doc.tables:
         for fila in tabla.rows:
             for celda in fila.cells:
-                for placeholder, valor in reemplazos.items():
+                for placeholder, valor in registro.items():
                     if placeholder in celda.text:
                         celda.text = celda.text.replace(placeholder, str(valor))
     
     # Guardar el archivo generado
-    nombre_archivo = f"{ruta_salida}/contrato_{registro['RIF']}.docx"
+    nombre_archivo = f"{ruta_salida}/contrato_{contrato}.docx"
     doc.save(nombre_archivo)
     print(f"Archivo generado en: {ruta_salida}")
 
@@ -80,11 +82,13 @@ def obtener_datos_excel(ruta_archivo):
 # Ejemplo de uso
 ruta_plantilla = "Data/Plantillas/Pantilla1.docx"  # Ruta del archivo de plantilla
 ruta_salida = "Data/Contratos/"  # Ruta del archivo generado
-registros = obtener_datos_excel("Data/Plantillas/hoja.xlsx")  # Lista de diccionarios con los registros
-reemplazos = {
-    "{nombre}": "Alexis",
-    "{fecha}": "21 de enero de 2025",
-    "{mensaje}": "¡Este es un ejemplo generado dinámicamente!"
-}
+# registros = obtener_datos_excel("Data/Plantillas/hoja.xlsx")  # Lista de diccionarios con los registros
+registros = [
+    {
+        "{nombre}": "Alexis",
+        "{fecha}": "21 de enero de 2025",
+        "{mensaje}": "¡Este es un ejemplo generado dinámicamente!"
+    }
+]
 
 generar_docx_desde_plantilla(ruta_plantilla, ruta_salida, registros)
